@@ -9,6 +9,7 @@ app.use( express.json() );
 
 // Criar um service para conetar ao banco de dados MYSQL
 const connection = conexao.conectar();
+
 conexao.criarTabelaUsers();
 conexao.criarTabelaImagem();
 

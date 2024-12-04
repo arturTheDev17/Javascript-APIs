@@ -5,7 +5,7 @@ function conectar() {
         host: 'localhost',
         user: 'root',
         password: '',
-        database: 'desafio'
+        // database: 'desafio'
     });
     
     connection.connect();
@@ -13,7 +13,14 @@ function conectar() {
     connection.query( 'CREATE DATABASE IF NOT EXISTS desafio', (err, result) => {
         console.log((err) ? err : result);
     });
-    return connection;
+
+
+    return mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: '',
+        database: 'desafio'
+    });;
 }
 
 function criarTabelaUsers() {
