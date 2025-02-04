@@ -1,45 +1,20 @@
-const imageRepository = require("../Repository/ImagesRepository");
-const Image = require("../Model/Image");
+const imageRepository = require('../repository/imageRepository');
+
 class ImageService {
   async getImages() {
-    const images = await imageRepository.listarImagens();
-    const imagesReturn = images.map((image) => {
-      return new Image(
-        image.id,
-        image.titulo,
-        image.referencia,
-        image.data_criacao
-      );
-    });
-    return imagesReturn;
+    return await imageRepository.listarImagens();
   }
 
-  async createImage(image = {}) {
-    const newImage = await imageRepository.createImage(
-      new Image(image.id, image.titulo, image.referencia, image.data_criacao)
-    );
-    return new Image(
-      newImage.id,
-      newImage.titulo,
-      newImage.referencia,
-      newImage.data_criacao
-    );
+  async createImage(image) {
+    return await imageRepository.createImage(image);
   }
 
   async getImage(id) {
-    const image = await imageRepository.getImage(id);
-    const imageReturn = new Image(
-      image.id,
-      image.titulo,
-      image.referencia,
-      image.data_criacao
-    );
-    return imageReturn;
+    return await imageRepository.getImage(id);
   }
 
   async updateImage(id, image) {
-    const retorno = await imageRepository.updateImage(id, image);
-    return retorno >= 1 ? "Image updated" : "Image not found";
+    return await imageRepository.updateImage(id, image);
   }
 
   async deleteImage(id) {

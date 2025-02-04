@@ -1,31 +1,20 @@
-const userRepository = require("../repository/userRepository");
-const User = require("../Model/User");
+const userRepository = require('../repository/userRepository');
 
 class UserService {
   async getUsers() {
-    const users = await userRepository.listarUsuarios();
-    const usersReturn = users.map((user) => {
-      return new User(user.id, user.name, user.data_criacao);
-    });
-    return usersReturn;
+    return await userRepository.listarUsuarios();
   }
 
-  async createUser(user = {}) {
-    const newUser = await userRepository.createUser(
-      new User(user.id, user.name, user.data_criacao)
-    );
-    return new User(newUser.id, newUser.name, newUser.data_criacao);
+  async createUser(user) {
+    return await userRepository.createUser(user);
   }
 
   async getUser(id) {
-    const user = await userRepository.getUser(id);
-    const userReturn = new User(user.id, user.name, user.data_criacao);
-    return userReturn;
+    return await userRepository.getUser(id);
   }
 
   async updateUser(id, user) {
-    const retorno = await userRepository.updateUser(id, user);
-    return retorno >= 1 ? "User updated" : "User not found";
+    return await userRepository.updateUser(id, user);
   }
 
   async deleteUser(id) {
