@@ -1,31 +1,32 @@
-const Sequelize = require('sequelize');
+const Sequelize = require("sequelize");
 
-
-const sequelizeBefore = new Sequelize('mysql://root:@localhost:3306', {
-  dialect: 'mysql',
+const sequelizeBefore = new Sequelize("mysql://root:@localhost:3306", {
+  dialect: "mysql",
 });
 
-sequelizeBefore.authenticate()
-.then(() => {
-  console.log('Connected to database');
-  sequelize.query('CREATE DATABASE IF NOT EXISTS db_userImages')
+sequelizeBefore
+  .authenticate()
   .then(() => {
-    console.log('Database created successfully');
+    console.log("Connected to database");
+    sequelize
+      .query("CREATE DATABASE IF NOT EXISTS db_userImages")
+      .then(() => {
+        console.log("Database created successfully");
+      })
+      .catch((error) => {
+        console.error("Error creating database:", error);
+      });
   })
   .catch((error) => {
-    console.error('Error creating database:', error);
+    console.error("Error connecting to database:", error);
   });
-})
-.catch((error) => {
-  console.error('Error connecting to database:', error);
+
+const sequelize = new Sequelize("db_userImages", "root", "", {
+  dialect: "mysql",
+  host: "localhost",
 });
 
-const sequelize = new Sequelize( 'db_userImages', 'root' , '' , {
-  dialect: 'mysql',
-  host: 'localhost',
-});
-
-const User = sequelize.define('user', {
+const User = sequelize.define("user", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -41,7 +42,7 @@ const User = sequelize.define('user', {
   },
 });
 
-const Image = sequelize.define('image', {
+const Image = sequelize.define("image", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -61,12 +62,13 @@ const Image = sequelize.define('image', {
   },
 });
 
-sequelize.sync()
+sequelize
+  .sync()
   .then(() => {
-    console.log('Tables created successfully');
+    console.log("Tables created successfully");
   })
   .catch((error) => {
-    console.error('Error creating tables:', error);
+    console.error("Error creating tables:", error);
   });
 
 module.exports = { User, Image };
