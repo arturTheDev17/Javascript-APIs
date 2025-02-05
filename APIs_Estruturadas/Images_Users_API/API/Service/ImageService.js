@@ -28,12 +28,9 @@ class ImageService {
 
   async getImage(id) {
     const image = await imageRepository.getImage(id);
-    const imageReturn = new Image(
-      image.id,
-      image.titulo,
-      image.referencia,
-      image.data_criacao
-    );
+    const imageReturn = !image
+      ? null
+      : new Image(image.id, image.titulo, image.referencia, image.data_criacao);
     return imageReturn;
   }
 

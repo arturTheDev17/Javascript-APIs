@@ -19,7 +19,9 @@ class UserService {
 
   async getUser(id) {
     const user = await userRepository.getUser(id);
-    const userReturn = new User(user.id, user.name, user.data_criacao);
+    const userReturn = !user
+      ? null
+      : new User(user.id, user.name, user.data_criacao);
     return userReturn;
   }
 

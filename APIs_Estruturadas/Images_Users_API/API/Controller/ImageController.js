@@ -4,55 +4,44 @@ const imageService = require("../Service/ImageService");
 
 router.use(express.json());
 
-router.get("/", async (req, res) => {
-  try {
-    const images = await imageService.getImages();
-    res.json(images);
-  } catch (error) {
-    res.status(400).json({ message: "Bad Request", error: error });
-  }
-});
+// router.get("/", async (req, res) => {
+async function getImages(req, res) {
+  return await imageService.getImages();
+}
+// });
 
-router.post("/", async (req, res) => {
-  try {
-    const image = await imageService.createImage(req.body);
-    res.json(image);
-  } catch (error) {
-    res.status(400).json({ message: "Bad Request", error: error });
-  }
-});
+// router.post("/", async (req, res) => {
+async function createImage(req) {
+  return await imageService.createImage(req.body);
+}
+// });
 
-router.get("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    const image = await imageService.getImage(id);
-    if (!image) {
-      res.status(404).json({ message: "Image not found" });
-    }
-    res.json(image);
-  } catch (error) {
-    res.status(400).json({ message: "Bad Request" });
-  }
-});
-
-router.put("/:id", async (req, res) => {
+// router.get("/:id", async (req, res) => {
+async function getImage(req) {
   const id = req.params.id;
-  try {
-    const image = await imageService.updateImage(id, req.body);
-    res.json(image);
-  } catch (error) {
-    res.status(400).json({ message: "Bad Request" });
-  }
-});
+  return await imageService.getImage(id);
+}
+// });
 
-router.delete("/:id", async (req, res) => {
-  try {
-    const id = req.params.id;
-    await imageService.deleteImage(id);
-    res.status(204).json({ message: "Image deleted" });
-  } catch (error) {
-    res.status(400).json({ message: "Bad Request" });
-  }
-});
+// router.put("/:id", async (req, res) => {
+async function updateImage(req) {
+  const id = req.params.id;
+  return await imageService.updateImage(id, req.body);
+}
+// });
 
-module.exports = router;
+// router.delete("/:id", async (req, res) => {
+
+async function deleteImage(req) {
+  const id = req.params.id;
+  await imageService.deleteImage(id);
+}
+// });
+
+module.exports = {
+  getImages,
+  createImage,
+  getImage,
+  updateImage,
+  deleteImage,
+};
