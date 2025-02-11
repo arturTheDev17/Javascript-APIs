@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const userController = require("./Controller/UserController");
 const imageController = require("./Controller/ImageController");
+const awsController = require("./Controller/AwsController")
 
 app.use(express.json());
 //app.use('/users', userController);
@@ -100,6 +101,54 @@ app.delete("/images/:id", (req, res) => {
 app.put("/images/:id", async (req, res) => {
   try {
     const image = await imageController.updateImage(req);
+    res.json(image);
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
+});
+
+app.post("/aws", async (req, res) => {
+  try {
+    const image = await awsController.createImage(req);
+    res.json(image);
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
+});
+
+app.get("/aws", async (req, res) => {
+  try {
+    const images = await awsController.getImages();
+    res.json(images);
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
+});
+
+app.get("/aws/:id", async (req, res) => {
+  try {
+    const image = await awsController.getImage(req);
+    if (image === null) {
+      res.status(404).json({ message: "Image not found" });
+    }
+    res.json(image);
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
+});
+
+app.delete("/aws/:id", (req, res) => {
+  try {
+    awsController.deleteImage(req);
+    res.status(204);
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
+});
+
+app.put("/aws/:id", async (req, res) => {
+  try {
+    const image = await awsController.updateImage(req);
     res.json(image);
   } catch (error) {
     res.status(400).json({ message: "Bad Request" });

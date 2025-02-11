@@ -5,7 +5,7 @@ const imageService = require("../Service/ImageService");
 router.use(express.json());
 
 // router.get("/", async (req, res) => {
-async function getImages(req, res) {
+async function getImages() {
   return await imageService.getImages();
 }
 // });
