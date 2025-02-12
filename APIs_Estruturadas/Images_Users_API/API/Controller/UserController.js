@@ -1,41 +1,47 @@
 const express = require("express");
-// const router = express.Router();
 const userService = require("../Service/UserService");
 
-// router.use(express.json());
 
-// router.get("/", async (req, res) => {
-async function getUsers() {
-  return await userService.getUsers();
+async function getUsers(req,res) {
+  try {
+    const users = await userService.getUsers();
+    if (users.length === 0) {
+      res.status(404).json({ message: "Users not found" });
+    } else {
+      res.json(users);
+    }
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
 }
-// });
 
-// router.post("/", async (req, res) => {
-async function createUser(req) {
-  return await userService.createUser(req.body);
+async function createUser(req , res) {
+  try {
+    const user = await userService.createUser(req.body);
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
 }
-// });
 
-// router.get("/:id", async (req, res) => {
 async function getUser(req) {
   const id = req.params.id;
   return await userService.getUser(id);
 }
-// });
 
-// router.put("/:id", async (req, res) => {
 async function updateUser(req) {
   const id = req.params.id;
   return await userService.updateUser(id, req.body);
 }
-// });
 
-// router.delete("/:id", async (req, res) => {
 async function deleteUser(req) {
-  const id = req.params.id;
-  await userService.deleteUser(id);
+  try {
+    userService.deleteUser(req.params.id);
+    res.status(200).json({ message: "User deleted" });
+  } catch (error) {
+    res.status(400);
+  }
 }
-// });
 
 module.exports = {
   getUsers,

@@ -4,17 +4,34 @@ const awsService = require("../Service/AwsService");
 
 router.use(express.json());
 
-async function getImages() {
-    return await awsService.getImages();
+async function getImages(req, res) {
+    try {
+      const images = await awsService.getImages();
+      res.json(images);
+    } catch (error) {
+      res.status(400).json({ message: "Bad Request" });
+    }
 }
 
-async function createImage(req) {
-    return await awsService.createImage(req.body);
-  }
+async function createImage(req, res) {
+    try {
+      const image = await awsService.createImage(req.body);
+      res.json(image);
+    } catch (error) {
+      res.status(400).json({ message: "Bad Request" });
+    }
+}
   
-  async function getImage(req) {
-    const id = req.params.id;
-    return await awsService.getImage(id);
+  async function getImage(req , res) {
+    try {
+      const image = await awsService.getImage(req.params.id);
+      if (image === null) {
+        res.status(404).json({ message: "Image not found" });
+      }
+      res.json(image);
+    } catch (error) {
+      res.status(400).json({ message: "Bad Request" });
+    }
   }
   
   async function updateImage(req) {
@@ -22,9 +39,13 @@ async function createImage(req) {
     return await awsService.updateImage(id, req.body);
   }
     
-  async function deleteImage(req) {
-    const id = req.params.id;
-    await awsService.deleteImage(id);
+  async function deleteImage(req, res) {
+    try {
+      awsService.deleteImage(req.params.id);
+      res.status(200).json({ message: "Image deleted" });
+    } catch (error) {
+      res.status(400);
+    }
   }
   
   module.exports = {
