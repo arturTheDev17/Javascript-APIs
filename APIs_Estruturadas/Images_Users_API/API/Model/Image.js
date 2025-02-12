@@ -1,9 +1,9 @@
 class Image {
-  constructor(id, titulo, referencia, data_criacao) {
+  constructor(id, titulo, referencia , id_user) {
     this.id = id;
     this.titulo = titulo;
     this.referencia = referencia;
-    this.data_criacao = data_criacao;
+    this.id_user = id_user;
   }
 }
 

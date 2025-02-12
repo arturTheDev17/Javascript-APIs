@@ -48,17 +48,14 @@ const Image = sequelize.define("image", {
     autoIncrement: true,
     primaryKey: true,
   },
-  titulo: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
   referencia: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  data_criacao: {
-    type: Sequelize.STRING,
-    allowNull: false,
+  id_user: {
+    type: Sequelize.INTEGER,
+    foreignKey: true,
+    allowNull: false
   },
 });
 
