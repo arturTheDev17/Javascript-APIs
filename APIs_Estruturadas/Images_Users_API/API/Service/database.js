@@ -52,10 +52,14 @@ const Image = sequelize.define("image", {
     type: Sequelize.STRING,
     allowNull: false,
   },
+  titulo: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   id_user: {
     type: Sequelize.INTEGER,
     foreignKey: true,
-    allowNull: false
+    allowNull: false,
   },
 });
 

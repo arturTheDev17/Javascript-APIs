@@ -1,8 +1,7 @@
 const express = require("express");
 const userService = require("../Service/UserService");
 
-
-async function getUsers(req,res) {
+async function getUsers(req, res) {
   try {
     const users = await userService.getUsers();
     if (users.length === 0) {
@@ -15,7 +14,7 @@ async function getUsers(req,res) {
   }
 }
 
-async function createUser(req , res) {
+async function createUser(req, res) {
   try {
     const user = await userService.createUser(req.body);
     res.json(user);
@@ -24,17 +23,29 @@ async function createUser(req , res) {
   }
 }
 
-async function getUser(req) {
-  const id = req.params.id;
-  return await userService.getUser(id);
+async function getUser(req, res) {
+  try {
+    const user = await userService.getUser(req.params.id);
+    if (user === null) {
+      res.status(404).json({ message: "User not found" });
+    } else {
+      res.json(user);
+    }
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
 }
 
-async function updateUser(req) {
-  const id = req.params.id;
-  return await userService.updateUser(id, req.body);
+async function updateUser(req, res) {
+  try {
+    const user = await userService.updateUser(req.params.id, req.body);
+    res.json(user);
+  } catch (error) {
+    res.status(400).json({ message: "Bad Request" });
+  }
 }
 
-async function deleteUser(req) {
+async function deleteUser(req, res) {
   try {
     userService.deleteUser(req.params.id);
     res.status(200).json({ message: "User deleted" });

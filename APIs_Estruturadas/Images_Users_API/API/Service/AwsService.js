@@ -1,42 +1,49 @@
 const awsRepository = require("../Repository/AwsRepository");
 const Image = require("../Model/Image");
 
-const AWS = require('aws-sdk');
+const AWS = require("aws-sdk");
+
+AWS.config.update({
+  region: "us-west-1", // Substitua pela sua região
+  accessKeyId: "java",
+  secretAccessKey: "spring",
+});
 
 const s3 = new AWS.S3();
 
-const fs = require('fs');
+const fs = require("fs");
 
 const downloadFile = (bucketName, keyName, downloadPath) => {
   const params = {
     Bucket: bucketName,
-    Key: keyName
+    Key: keyName,
   };
+
+  fs.writeFileSync(`./assets/${keyName}.jpg`, "");
 
   const file = fs.createWriteStream(downloadPath);
 
   s3.getObject(params).createReadStream().pipe(file);
 
-  file.on('close', () => {
-    console.log('Arquivo baixado com sucesso:', downloadPath);
+  file.on("close", () => {
+    console.log("Arquivo baixado com sucesso:", downloadPath);
   });
-
 };
 
 const uploadFile = (filePath, bucketName, keyName) => {
   const fileContent = fs.readFileSync(filePath);
 
   const params = {
-    Bucket: bucketName,  // Nome do seu bucket S3
-    Key: keyName,        // Nome do arquivo no S3
-    Body: fileContent    // Conteúdo do arquivo
+    Bucket: bucketName, // Nome do seu bucket S3
+    Key: keyName, // Nome do arquivo no S3
+    Body: fileContent, // Conteúdo do arquivo
   };
 
   s3.upload(params, (err, data) => {
     if (err) {
-      console.error('Erro ao fazer o upload:', err);
+      console.error("Erro ao fazer o upload:", err);
     } else {
-      console.log('Arquivo carregado com sucesso:', data.Location);
+      console.log("Arquivo carregado com sucesso:", data.Location);
     }
   });
 };
@@ -44,20 +51,14 @@ const uploadFile = (filePath, bucketName, keyName) => {
 // Exemplo de uso
 // uploadFile('./assets/romario.jpg' , 'bucketmi74', 'rm_lightyear.jpg');
 
-// // Exemplo de uso
+// Exemplo de uso
 // downloadFile('nome-do-seu-bucket', 'arquivo-no-s3.txt', './caminho/do/arquivo-baixado.txt');
-
 
 class AwsService {
   async getImages() {
     const images = await awsRepository.listarImagens();
     const imagesReturn = images.map((image) => {
-      return new Image(
-        image.id,
-        image.titulo,
-        image.referencia,
-        image.id_user
-      );
+      return new Image(image.id, image.titulo, image.referencia, image.id_user);
     });
     return imagesReturn;
   }
@@ -67,7 +68,9 @@ class AwsService {
     const newImage = await awsRepository.createImage(
       new Image(image.id, image.titulo, ref, image.id_user)
     );
-    uploadFile(`./assets/${image.titulo}.jpg` , 'bucketmi74', ref);
+
+    uploadFile(`./assets/${image.titulo}.jpg`, "bucketmi74", ref);
+
     return new Image(
       newImage.id,
       newImage.titulo,
@@ -78,7 +81,12 @@ class AwsService {
 
   async getImage(id) {
     const image = await awsRepository.getImage(id);
-    downloadFile('bucketmi74', image.referencia, `../assets/${image.referencia}.jpg`)
+
+    downloadFile(
+      "bucketmi74",
+      `${image.referencia}`,
+      `./assets/${image.referencia}.jpg`
+    );
     // downloadFile('bucketmi74', image.referencia, `./assets/imagem.jpg`)
     const imageReturn = !image
       ? null
@@ -92,7 +100,6 @@ class AwsService {
   }
 
   async deleteImage(id) {
-    
     return await awsRepository.deleteImage(id);
   }
 }
