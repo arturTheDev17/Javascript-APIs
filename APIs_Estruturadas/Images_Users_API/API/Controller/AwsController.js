@@ -1,8 +1,4 @@
-const express = require("express");
-const router = express.Router();
-const awsService = require("../Service/AwsService");
-
-router.use(express.json());
+const awsService = require("../service/AwsService");
 
 async function getImages(req, res) {
   try {
@@ -12,7 +8,14 @@ async function getImages(req, res) {
     res.status(400).json({ message: "Bad Request" });
   }
 }
-
+/*
+  O corpo da requisição deve ser conforme abaixo
+  {
+    "titulo" : "Carro", //Deve ser o nome de uma imagem dentro de assets, por exemplo: 'Inter', excluindo a extensão do arquivo, passada abaixo
+    "extensao" : "jpg", //Já que o carro possui extensão jpg, foi colocado aqui
+    "id_user" : 1 //deve ser o id de algum usuario no banco de dados
+  }
+*/
 async function createImage(req, res) {
   try {
     const image = await awsService.createImage(req.body);
@@ -22,13 +25,19 @@ async function createImage(req, res) {
   }
 }
 
+/*
+  Deve-se usar o id da imagem no banco de dados, 
+  OBS: será feito o download da imagem com o nome sendo a referência UUID recuperada da AWS a partir do banco de dados e 
+  a extensão de arquivo armazenada no banco
+*/
 async function getImage(req, res) {
   try {
     const image = await awsService.getImage(req.params.id);
     if (image === null) {
       res.status(404).json({ message: "Image not found" });
+    } else {
+      res.json(image);
     }
-    res.json(image);
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: "Bad Request" });

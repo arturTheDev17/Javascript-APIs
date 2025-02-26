@@ -1,5 +1,5 @@
 const userRepository = require("../repository/userRepository");
-const User = require("../Model/User");
+const User = require("../model/User");
 
 class UserService {
   async getUsers() {

@@ -1,80 +1,50 @@
-const awsRepository = require("../Repository/AwsRepository");
-const Image = require("../Model/Image");
+const awsRepository = require("../repository/AwsRepository");
+const Image = require("../model/Image");
 
 const AWS = require("aws-sdk");
 
 AWS.config.update({
-  region: "us-west-1", // Substitua pela sua região
-  accessKeyId: "java",
-  secretAccessKey: "spring",
+  region: "us-west-1",
+  accessKeyId: "",
+  secretAccessKey: "",
 });
 
 const s3 = new AWS.S3();
-
 const fs = require("fs");
-
-const downloadFile = (bucketName, keyName, downloadPath) => {
-  const params = {
-    Bucket: bucketName,
-    Key: keyName,
-  };
-
-  fs.writeFileSync(`./assets/${keyName}.jpg`, "");
-
-  const file = fs.createWriteStream(downloadPath);
-
-  s3.getObject(params).createReadStream().pipe(file);
-
-  file.on("close", () => {
-    console.log("Arquivo baixado com sucesso:", downloadPath);
-  });
-};
-
-const uploadFile = (filePath, bucketName, keyName) => {
-  const fileContent = fs.readFileSync(filePath);
-
-  const params = {
-    Bucket: bucketName, // Nome do seu bucket S3
-    Key: keyName, // Nome do arquivo no S3
-    Body: fileContent, // Conteúdo do arquivo
-  };
-
-  s3.upload(params, (err, data) => {
-    if (err) {
-      console.error("Erro ao fazer o upload:", err);
-    } else {
-      console.log("Arquivo carregado com sucesso:", data.Location);
-    }
-  });
-};
-
-// Exemplo de uso
-// uploadFile('./assets/romario.jpg' , 'bucketmi74', 'rm_lightyear.jpg');
-
-// Exemplo de uso
-// downloadFile('nome-do-seu-bucket', 'arquivo-no-s3.txt', './caminho/do/arquivo-baixado.txt');
 
 class AwsService {
   async getImages() {
     const images = await awsRepository.listarImagens();
     const imagesReturn = images.map((image) => {
-      return new Image(image.id, image.titulo, image.referencia, image.id_user);
+      this.getImage(image.id);
+      return new Image(
+        image.id,
+        image.titulo,
+        image.referencia,
+        image.extensao,
+        image.id_user
+      );
     });
     return imagesReturn;
   }
 
-  async createImage(image = {}) {
+  async createImage(image) {
     const ref = crypto.randomUUID();
     const newImage = await awsRepository.createImage(
-      new Image(image.id, image.titulo, ref, image.id_user)
+      new Image(image.id, image.titulo, ref, image.extensao, image.id_user)
     );
 
-    uploadFile(`./assets/${image.titulo}.jpg`, "bucketmi74", ref);
+    await uploadFile(
+      `./assets/${image.titulo}.${image.extensao}`,
+      "bucketmi74",
+      ref
+    );
 
     return new Image(
       newImage.id,
       newImage.titulo,
       newImage.referencia,
+      image.extensao,
       newImage.id_user
     );
   }
@@ -82,15 +52,22 @@ class AwsService {
   async getImage(id) {
     const image = await awsRepository.getImage(id);
 
-    downloadFile(
-      "bucketmi74",
-      `${image.referencia}`,
-      `./assets/${image.referencia}.jpg`
-    );
-    // downloadFile('bucketmi74', image.referencia, `./assets/imagem.jpg`)
+    if (image !== null) {
+      await downloadFile(
+        "bucketmi74",
+        `${image.referencia}`,
+        `./assets/aws/${image.referencia}.${image.extensao}`
+      );
+    }
     const imageReturn = !image
       ? null
-      : new Image(image.id, image.titulo, image.referencia, image.id_user);
+      : new Image(
+          image.id,
+          image.titulo,
+          image.referencia,
+          image.extensao,
+          image.id_user
+        );
     return imageReturn;
   }
 
@@ -103,4 +80,38 @@ class AwsService {
     return await awsRepository.deleteImage(id);
   }
 }
+
+const downloadFile = async (bucketName, keyName, downloadPath) => {
+  const params = {
+    Bucket: bucketName,
+    Key: keyName,
+  };
+
+  const file = fs.createWriteStream(downloadPath);
+
+  s3.getObject(params).createReadStream().pipe(file);
+
+  file.on("close", () => {
+    console.log("Arquivo baixado com sucesso:", downloadPath);
+  });
+};
+
+const uploadFile = async (filePath, bucketName, keyName) => {
+  const fileContent = fs.readFileSync(filePath);
+
+  const params = {
+    Bucket: bucketName,
+    Key: keyName,
+    Body: fileContent,
+  };
+
+  s3.upload(params, (err, data) => {
+    if (err) {
+      console.error("Erro ao fazer o upload:", err);
+    } else {
+      console.log("Arquivo carregado com sucesso:", data.Location);
+    }
+  });
+};
+
 module.exports = new AwsService();

@@ -1,4 +1,4 @@
-const Image = require('../Service/database').Image;
+const Image = require("../service/DatabaseService").Image;
 
 class AwsRepository {
   async listarImagens() {

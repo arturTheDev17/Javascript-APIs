@@ -1,4 +1,4 @@
-const User = require('../Service/database').User;
+const User = require("../service/DatabaseService").User;
 
 class UserRepository {
   async listarUsuarios() {
