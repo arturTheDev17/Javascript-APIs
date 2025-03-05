@@ -8,11 +8,13 @@ sequelizeBefore
   .authenticate()
   .then(() => {
     console.log("Connected to database");
+
     sequelize
       .query("CREATE DATABASE IF NOT EXISTS db_userImages")
       .then(() => {
         console.log("Database created successfully");
       })
+
       .catch((error) => {
         console.error("Error creating database:", error);
       });

@@ -21,6 +21,7 @@ async function createImage(req, res) {
     const image = await awsService.createImage(req.body);
     res.json(image);
   } catch (error) {
+    console.log(error);
     res.status(400).json({ message: "Bad Request" });
   }
 }
